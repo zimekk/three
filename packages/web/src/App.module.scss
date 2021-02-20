@@ -1,0 +1,22 @@
+.Box {
+  position: absolute;
+  background: #111;
+  height: 40px;
+  width: 40px;
+  cursor: move;
+}
+
+.Ground {
+  position: absolute;
+  top: 140px;
+  height: 120px;
+  width: 400px;
+  background: #666;
+}
+
+html,
+body {
+  position: relative;
+  height: 100%;
+  margin: 0;
+}

@@ -1,0 +1,37 @@
+{
+  "name": "three",
+  "version": "1.0.0",
+  "repository": "https://github.com/zimekk/three.git",
+  "author": "Marcin Makarewicz <zimekk@gmail.com>",
+  "license": "UNLICENSED",
+  "private": true,
+  "engines": {
+    "node": "^12"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
+  "lint-staged": {},
+  "scripts": {
+    "clean": "rm -rf packages/*/public packages/*/lib",
+    "build": "yarn workspaces run build",
+    "serve": "yarn workspace @dev/app serve",
+    "start": "yarn workspace @dev/app start",
+    "update": "yarn upgrade-interactive --latest"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "fibers": "^5.0.0",
+    "husky": "^4.3.7",
+    "lerna": "^3.22.1",
+    "prettier": "^2.2.0",
+    "pretty-quick": "^3.1.0"
+  },
+  "dependencies": {
+    "type-coverage": "^2.15.1"
+  }
+}
