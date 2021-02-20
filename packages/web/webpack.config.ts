@@ -1,3 +1,4 @@
+import CopyWebpackPlugin from "copy-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import * as path from "path";
 import * as webpack from "webpack";
@@ -34,6 +35,10 @@ const config: webpack.Configuration = {
         ],
       },
       {
+        test: /\.(mtl|obj|png)$/,
+        use: ["file-loader"],
+      },
+      {
         test: /\.tsx?$/,
         loader: "babel-loader",
         exclude: /node_modules/,
@@ -52,6 +57,16 @@ const config: webpack.Configuration = {
   plugins: [
     new webpack.EnvironmentPlugin(["NODE_ENV"]),
     new HtmlWebpackPlugin(),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.join(path.resolve(__dirname, "src/assets"), "shoe-draco.glb"),
+        },
+        {
+          from: path.join(path.resolve(__dirname, "src/assets"), "dziewczyna/dziewczyna.png"),
+        },
+      ],
+    }),
   ],
 };
 

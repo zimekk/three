@@ -32,6 +32,10 @@
     "pretty-quick": "^3.1.0"
   },
   "dependencies": {
+    "copy-webpack-plugin": "^7.0.0",
     "type-coverage": "^2.15.1"
+  },
+  "resolutions": {
+    "three": "^0.124.0"
   }
 }

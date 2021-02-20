@@ -9,11 +9,16 @@
     "start": "webpack serve --mode development"
   },
   "dependencies": {
+    "@react-three/drei": "^3.8.6",
     "history": "^5.0.0",
     "matter-js": "^0.16.1",
     "poly-decomp": "^0.3.0",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-three-fiber": "^5.3.18",
+    "three": "^0.125.0",
+    "use-cannon": "^0.5.3",
+    "zustand": "^3.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
@@ -33,6 +38,7 @@
     "copy-webpack-plugin": "^7.0.0",
     "css-loader": "^5.0.2",
     "dotenv": "^8.2.0",
+    "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.1.0",
     "sass": "^1.32.7",
     "sass-loader": "^11.0.1",
