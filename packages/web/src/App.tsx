@@ -153,6 +153,20 @@ function Car({ parameter, ...props }) {
   return <primitive ref={ref} object={scene} {...props} />;
 }
 
+function Dog({ parameter, ...props }) {
+  const ref = useRef();
+  const { scene } = useGLTF("dog.gltf");
+
+  useFrame((state) => {
+    const t = state.clock.getElapsedTime();
+    if (ref.current) {
+      ref.current.rotation.y = Math.sin(t* 2) + 3;
+    }
+  });
+
+  return <primitive ref={ref} object={scene} {...props} />;
+}
+
 function Plane(props) {
   const [ref] = usePlane(() => ({ rotation: [-Math.PI / 2, 0, 0], ...props }));
   return (
@@ -225,6 +239,12 @@ export default function App() {
           />
           <Car
             position={[0, -1, -1]}
+            rotation={[0, 3.5, 0]}
+            scale={[0.1, 0.1, 0.1]}
+            parameter={parameter}
+          />
+          <Dog
+            position={[2, 0, 0]}
             rotation={[0, 3.5, 0]}
             scale={[0.1, 0.1, 0.1]}
             parameter={parameter}
