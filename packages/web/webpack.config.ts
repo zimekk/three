@@ -60,8 +60,14 @@ const config: webpack.Configuration = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: path.join(path.resolve(__dirname, "src/assets"), "shoe-draco.glb"),
+          from: path.join(path.resolve(__dirname, "src/assets"), "boy.gltf"),
         },
+        {
+          from: path.join(path.resolve(__dirname, "src/assets"), "car.gltf"),
+        },
+        // {
+        //   from: path.join(path.resolve(__dirname, "src/assets"), "shoe-draco.glb"),
+        // },
         {
           from: path.join(path.resolve(__dirname, "src/assets"), "dziewczyna/dziewczyna.png"),
         },
