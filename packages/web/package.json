@@ -9,21 +9,21 @@
     "start": "webpack serve --mode development"
   },
   "dependencies": {
+    "@react-three/cannon": "^0.5.5",
     "@react-three/drei": "^3.8.6",
     "history": "^5.0.0",
     "matter-js": "^0.16.1",
     "poly-decomp": "^0.3.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-three-fiber": "^5.3.18",
-    "three": "^0.125.0",
-    "use-cannon": "^0.5.3",
+    "react-three-fiber": "^5.3.19",
+    "three": "^0.124.0",
     "zustand": "^3.3.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.16",
+    "@babel/core": "^7.13.1",
     "@babel/preset-react": "^7.12.7",
-    "@babel/preset-typescript": "^7.12.16",
+    "@babel/preset-typescript": "^7.13.0",
     "@types/copy-webpack-plugin": "^6.3.0",
     "@types/history": "^4.7.8",
     "@types/html-webpack-plugin": "^3.2.4",
@@ -44,7 +44,7 @@
     "sass-loader": "^11.0.1",
     "serve": "^11.3.2",
     "style-loader": "^2.0.0",
-    "webpack": "^5.22.0",
+    "webpack": "^5.24.1",
     "webpack-cli": "^4.2.0",
     "webpack-dev-server": "^3.11.0"
   }

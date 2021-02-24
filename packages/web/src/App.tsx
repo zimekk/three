@@ -3,7 +3,7 @@ import { Canvas, useFrame, useLoader } from "react-three-fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
-import { Physics, usePlane, useBox } from "use-cannon";
+import { Physics, usePlane, useBox } from "@react-three/cannon";
 import styles from "./App.module.scss";
 
 // https://codesandbox.io/s/floating-shoe-forked-qxjoj
@@ -145,7 +145,7 @@ function Car({ parameter, ...props }) {
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
     if (ref.current) {
-      Object.assign(ref.current.position, parameter)
+      Object.assign(ref.current.position, parameter);
       ref.current.rotation.y += 0.01;
     }
   });
@@ -160,7 +160,7 @@ function Dog({ parameter, ...props }) {
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
     if (ref.current) {
-      ref.current.rotation.y = Math.sin(t* 2) + 3;
+      ref.current.rotation.y = Math.sin(t * 2) + 3;
     }
   });
 
@@ -194,7 +194,7 @@ function Cube(props) {
 
 export default function App() {
   const ref = useRef(null);
-  const [parameter, setParameter] = useState({x: 4, y:0, z:-3});
+  const [parameter, setParameter] = useState({ x: 4, y: 0, z: -3 });
 
   useEffect(() => {
     let frame = undefined;
@@ -215,26 +215,32 @@ export default function App() {
     <section className={styles.App}>
       <h1>Three</h1>
       <div className={styles.Range}>
-      <input
+        <input
           type="range"
           min="-10"
           max="10"
           value={parameter.x}
-          onChange={(e) => setParameter(parameter => ({...parameter, x: e.target.value}))}
+          onChange={(e) =>
+            setParameter((parameter) => ({ ...parameter, x: e.target.value }))
+          }
         />{" "}
         <input
           type="range"
           min="-10"
           max="10"
           value={parameter.y}
-          onChange={(e) => setParameter(parameter => ({...parameter, y: e.target.value}))}
+          onChange={(e) =>
+            setParameter((parameter) => ({ ...parameter, y: e.target.value }))
+          }
         />{" "}
         <input
           type="range"
           min="-10"
           max="10"
           value={parameter.z}
-          onChange={(e) => setParameter(parameter => ({...parameter, z: e.target.value}))}
+          onChange={(e) =>
+            setParameter((parameter) => ({ ...parameter, z: e.target.value }))
+          }
         />{" "}
         {JSON.stringify(parameter)}
       </div>

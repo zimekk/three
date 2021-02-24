@@ -30,9 +30,6 @@
     "lerna": "^3.22.1",
     "prettier": "^2.2.0",
     "pretty-quick": "^3.1.0",
-    "type-coverage": "^2.15.1"
-  },
-  "resolutions": {
-    "three": "^0.124.0"
+    "type-coverage": "^2.16.2"
   }
 }
