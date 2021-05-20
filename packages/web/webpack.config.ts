@@ -1,7 +1,7 @@
 import CopyWebpackPlugin from "copy-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import * as path from "path";
-import * as webpack from "webpack";
+import webpack from "webpack";
 import env from "dotenv";
 
 env.config({ path: path.resolve(__dirname, "../../.env") });
@@ -63,7 +63,10 @@ const config: webpack.Configuration = {
           context: path.resolve(__dirname, "src/assets"),
           from: "*.gltf",
         },
-        path.join(path.resolve(__dirname, "src/assets"), "dziewczyna/dziewczyna.png")
+        path.join(
+          path.resolve(__dirname, "src/assets"),
+          "dziewczyna/dziewczyna.png"
+        ),
       ],
     }),
   ],
