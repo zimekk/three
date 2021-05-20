@@ -10,10 +10,16 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged"
+      "pre-commit": "pretty-quick --staged",
+      "commit-msg": "commitlint --edit \"$1\""
     }
   },
   "lint-staged": {},
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
   "scripts": {
     "clean": "rm -rf packages/*/public packages/*/lib",
     "build": "yarn workspaces run build",
@@ -25,6 +31,8 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@commitlint/cli": "^12.1.4",
+    "@commitlint/config-conventional": "^12.1.4",
     "fibers": "^5.0.0",
     "husky": "^4.3.7",
     "lerna": "^3.22.1",
