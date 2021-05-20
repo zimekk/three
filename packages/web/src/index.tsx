@@ -8,10 +8,12 @@ const Spinner = () => <span>Loading...</span>;
 const Provider = ({ children }) => children;
 
 render(
-  <Provider>
-    <Suspense fallback={<Spinner />}>
-      <App />
-    </Suspense>
-  </Provider>,
+  <React.StrictMode>
+    <Provider>
+      <Suspense fallback={<Spinner />}>
+        <App />
+      </Suspense>
+    </Provider>
+  </React.StrictMode>,
   document.body.appendChild(document.createElement("div"))
 );

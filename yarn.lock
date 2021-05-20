@@ -1229,7 +1229,7 @@
     "@react-spring/shared" "9.0.0-rc.3"
     react-layout-effect "^1.0.1"
 
-"@react-spring/core@9.0.0-rc.3":
+"@react-spring/core@9.0.0-rc.3", "@react-spring/core@^9.0.0-rc.3":
   version "9.0.0-rc.3"
   resolved "https://registry.yarnpkg.com/@react-spring/core/-/core-9.0.0-rc.3.tgz#c8e697573936c525bd0f6ca0c0869f75c86e8a83"
   integrity sha512-3OzsVFxpfMJNkkQj8TwAH3NhUAX76AXu6WkslQF4EgBeEoG5eY3m+VvM9RsAsGWDuBKpscZ/wBpFt5Ih6KdGHA==
@@ -1249,6 +1249,16 @@
     "@babel/runtime" "^7.3.1"
     fluids "^0.1.6"
     tslib "^1.11.1"
+
+"@react-spring/three@^9.0.0-rc.3":
+  version "9.0.0-rc.3"
+  resolved "https://registry.yarnpkg.com/@react-spring/three/-/three-9.0.0-rc.3.tgz#bbfa7863c96ed8fa200cbff69222763c00977eef"
+  integrity sha512-H55T+Dnck+hsJ8WgE+tb89ngX1E1lDOpMBG4mGzNLGok6XgGqN0VBsHRN3QDl+aPfmJI1BPFPR6b6WbhwqRNbw==
+  dependencies:
+    "@babel/runtime" "^7.3.1"
+    "@react-spring/animated" "9.0.0-rc.3"
+    "@react-spring/core" "9.0.0-rc.3"
+    "@react-spring/shared" "9.0.0-rc.3"
 
 "@react-spring/web@^9.0.0-rc.3":
   version "9.0.0-rc.3"
@@ -4372,7 +4382,7 @@ glsl-noise@^0.0.0:
   resolved "https://registry.yarnpkg.com/glsl-noise/-/glsl-noise-0.0.0.tgz#367745f3a33382c0eeec4cb54b7e99cfc1d7670b"
   integrity sha1-NndF86MzgsDu7Ey1S36Zz8HXZws=
 
-got@^9.6.0:
+got@^9.2.2, got@^9.6.0:
   version "9.6.0"
   resolved "https://registry.yarnpkg.com/got/-/got-9.6.0.tgz#edf45e7d67f99545705de1f7bbeeeb121765ed85"
   integrity sha512-R7eWptXuGYxwijs0eV+v3o6+XH1IqVK8dJOEecQfTmkncw9AV4dcw/Dhxi8MdlqPthxxpZyizMzyg8RTmEsG+Q==
@@ -5694,6 +5704,13 @@ map-cache@^0.2.2:
   resolved "https://registry.yarnpkg.com/map-cache/-/map-cache-0.2.2.tgz#c32abd0bd6525d9b051645bb4f26ac5dc98a0dbf"
   integrity sha1-wyq9C9ZSXZsFFkW7TyasXcmKDb8=
 
+map-limit@0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/map-limit/-/map-limit-0.0.1.tgz#eb7961031c0f0e8d001bf2d56fab685d58822f38"
+  integrity sha1-63lhAxwPDo0AG/LVb6toXViCLzg=
+  dependencies:
+    once "~1.3.0"
+
 map-obj@^1.0.0, map-obj@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-1.0.1.tgz#d933ceb9205d82bdcf4886f6742bdc2b4dea146d"
@@ -6138,6 +6155,21 @@ neo-async@^2.6.0, neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
+new-array@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/new-array/-/new-array-1.0.0.tgz#5dbc639d961eac7f1a9fbc1a7146ec12f2924fbf"
+  integrity sha1-XbxjnZYerH8an7wacUbsEvKST78=
+
+nice-color-palettes@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/nice-color-palettes/-/nice-color-palettes-3.0.0.tgz#1ec31927cfc4ce8a51822b6bab2c64845d181abb"
+  integrity sha512-lL4AjabAAFi313tjrtmgm/bxCRzp4l3vCshojfV/ij3IPdtnRqv6Chcw+SqJUhbe7g3o3BecaqCJYUNLswGBhQ==
+  dependencies:
+    got "^9.2.2"
+    map-limit "0.0.1"
+    minimist "^1.2.0"
+    new-array "^1.0.0"
+
 nice-try@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
@@ -6451,6 +6483,13 @@ once@^1.3.0, once@^1.3.1, once@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/once/-/once-1.4.0.tgz#583b1aa775961d4b113ac17d9c50baef9dd76bd1"
   integrity sha1-WDsap3WWHUsROsF9nFC6753Xa9E=
+  dependencies:
+    wrappy "1"
+
+once@~1.3.0:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/once/-/once-1.3.3.tgz#b2e261557ce4c314ec8304f3fa82663e4297ca20"
+  integrity sha1-suJhVXzkwxTsgwTz+oJmPkKXyiA=
   dependencies:
     wrappy "1"
 
