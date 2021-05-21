@@ -35,7 +35,7 @@ const config: webpack.Configuration = {
         ],
       },
       {
-        test: /\.(mtl|obj|png)$/,
+        test: /\.(gltf|mtl|obj|png)$/,
         use: ["file-loader"],
       },
       {

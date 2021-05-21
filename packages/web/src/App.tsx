@@ -14,9 +14,10 @@ import styles from "./App.module.scss";
 const Spinner = () => <span>Loading...</span>;
 
 const PAGES = {
-  1: lazy(() => import("./Demo1")),
-  2: lazy(() => import("./Demo2")),
-  3: lazy(() => import("./Demo3")),
+  "game-1": lazy(() => import("./Game1")),
+  "demo-1": lazy(() => import("./Demo1")),
+  "demo-2": lazy(() => import("./Demo2")),
+  "demo-3": lazy(() => import("./Demo3")),
 };
 
 const getPage = (location: { hash: string }) => {
@@ -55,7 +56,7 @@ export default function App() {
 
   return (
     <section className={styles.App}>
-      <h1>
+      <h1 className={styles.Nav}>
         Three
         {Object.keys(PAGES).map((page) => (
           <a key={page} href={`#${page}`}>
