@@ -2,27 +2,71 @@ import * as THREE from "three";
 import React, { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useLoader, useThree } from "react-three-fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
-import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
-import { Physics, usePlane, useBox } from "@react-three/cannon";
-import { config, useSpring } from "@react-spring/core";
-import { a } from "@react-spring/three";
+// import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
+// import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
+// import { Physics, usePlane, useBox } from "@react-three/cannon";
+// import { config, useSpring } from "@react-spring/core";
+// import { a } from "@react-spring/three";
 import niceColors from "nice-color-palettes";
-import styles from "./App.module.scss";
+import useKeyPress from "./hooks/useKeyPress";
 import Island from "./components/Island.tsx";
+import styles from "./App.module.scss";
+
+function Boy({ parameter, ...props }) {
+  const ref = useRef();
+  const { scene } = useGLTF("boy.gltf");
+
+  const pressed = {
+    ArrowUp: useKeyPress("ArrowUp"),
+    ArrowDown: useKeyPress("ArrowDown"),
+    ArrowLeft: useKeyPress("ArrowLeft"),
+    ArrowRight: useKeyPress("ArrowRight"),
+  };
+  useEffect(() => {
+    if (pressed.ArrowUp) {
+      ref.current.position.x -= Math.sin(ref.current.rotation.y);
+      ref.current.position.z -= Math.cos(ref.current.rotation.y);
+    }
+  }, [pressed.ArrowUp]);
+  useEffect(() => {
+    if (pressed.ArrowDown) {
+      ref.current.position.x += Math.sin(ref.current.rotation.y);
+      ref.current.position.z += Math.cos(ref.current.rotation.y);
+    }
+  }, [pressed.ArrowDown]);
+  useEffect(() => {
+    if (pressed.ArrowLeft) {
+      ref.current.rotation.y += Math.PI / 4;
+    }
+  }, [pressed.ArrowLeft]);
+  useEffect(() => {
+    if (pressed.ArrowRight) {
+      ref.current.rotation.y -= Math.PI / 4;
+    }
+  }, [pressed.ArrowRight]);
+
+  useFrame((state) => {
+    const t = state.clock.getElapsedTime();
+    // if (ref.current) {
+    //   ref.current.rotation.y = Math.sin(t + 2 / 1) + 3;
+    // }
+  });
+
+  return <primitive ref={ref} object={scene} {...props} />;
+}
 
 export default function Demo() {
   // const ref = useRef(null);
   const [parameter, setParameter] = useState({ x: 4, y: 0, z: -3 });
 
-  useEffect(() => {
-    let frame = undefined;
-    function renderLoop() {
-      frame = requestAnimationFrame(renderLoop);
-    }
-    renderLoop();
-    return () => cancelAnimationFrame(frame);
-  }, []);
+  // useEffect(() => {
+  //   let frame = undefined;
+  //   function renderLoop() {
+  //     frame = requestAnimationFrame(renderLoop);
+  //   }
+  //   renderLoop();
+  //   return () => cancelAnimationFrame(frame);
+  // }, []);
 
   const colors = niceColors[1];
 
@@ -65,6 +109,7 @@ export default function Demo() {
       >
         <Suspense fallback="loading...">
           <Island />
+          <Boy position={[0, 0.3, 0]} scale={[0.1, 0.1, 0.1]} />
           {/* <Boy
             position={[2, 0, -1]}
             rotation={[0, 3.5, 0]}
@@ -87,8 +132,8 @@ export default function Demo() {
           {/* <Shoe position={[-1, 2, 0]} /> */}
         </Suspense>
         <OrbitControls />
-        <color attach="background" args={["lightblue"]} />
-        <hemisphereLight intensity={0.35} />
+        {/* <color attach="background" args={["lightblue"]} /> */}
+        {/* <hemisphereLight intensity={0.35} /> */}
         <spotLight
           position={[10, 10, 10]}
           angle={0.3}
