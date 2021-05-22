@@ -8,12 +8,21 @@ import useKeyPress from "./hooks/useKeyPress";
 import Island from "./components/Island.tsx";
 import styles from "./App.module.scss";
 
+const calcPos = ({ position: { x, y, z } }, h = 1) => [x, y + h, z];
+
+const calcCam = ({ position: { x, y, z }, rotation }, d = 3, h = 3) => [
+  x + Math.sin(rotation.y) * d,
+  y + h,
+  z + Math.cos(rotation.y) * d,
+];
+
 function Boy({ parameter, ...props }) {
   const ref = useRef();
   const { gl, camera } = useThree();
   const { scene } = useGLTF("boy.gltf");
-  const [{ pos }, set] = useSpring(() => ({
+  const [{ pos, cam }, set] = useSpring(() => ({
     pos: [0, 0, 0],
+    cam: [0, 0, 0],
     config: config.molasses,
   }));
 
@@ -29,11 +38,8 @@ function Boy({ parameter, ...props }) {
       ref.current.position.z -= Math.cos(ref.current.rotation.y);
     }
     set({
-      pos: [
-        ref.current.position.x,
-        ref.current.position.y,
-        ref.current.position.z,
-      ],
+      pos: calcPos(ref.current),
+      cam: calcCam(ref.current),
     });
   }, [pressed.ArrowUp]);
   useEffect(() => {
@@ -42,11 +48,8 @@ function Boy({ parameter, ...props }) {
       ref.current.position.z += Math.cos(ref.current.rotation.y);
     }
     set({
-      pos: [
-        ref.current.position.x,
-        ref.current.position.y,
-        ref.current.position.z,
-      ],
+      pos: calcPos(ref.current),
+      cam: calcCam(ref.current),
     });
   }, [pressed.ArrowDown]);
   useEffect(() => {
@@ -54,11 +57,8 @@ function Boy({ parameter, ...props }) {
       ref.current.rotation.y += Math.PI / 4;
     }
     set({
-      pos: [
-        ref.current.position.x,
-        ref.current.position.y,
-        ref.current.position.z,
-      ],
+      pos: calcPos(ref.current),
+      cam: calcCam(ref.current),
     });
   }, [pressed.ArrowLeft]);
   useEffect(() => {
@@ -66,17 +66,15 @@ function Boy({ parameter, ...props }) {
       ref.current.rotation.y -= Math.PI / 4;
     }
     set({
-      pos: [
-        ref.current.position.x,
-        ref.current.position.y,
-        ref.current.position.z,
-      ],
+      pos: calcPos(ref.current),
+      cam: calcCam(ref.current),
     });
   }, [pressed.ArrowRight]);
 
   useFrame((state) => {
     // const t = state.clock.getElapsedTime();
     camera.lookAt(new THREE.Vector3(...pos.get()));
+    (([x, y, z]) => Object.assign(camera.position, { x, y, z }))(cam.get());
   });
 
   return <primitive ref={ref} object={scene} {...props} />;
@@ -123,8 +121,8 @@ export default function Demo() {
         camera={{ position: [-1, 2, 5], fov: 50 }}
       >
         <Suspense fallback="loading...">
-          <Island />
-          <Boy position={[0, 0.3, 0]} scale={[0.1, 0.1, 0.1]} />
+          <Island scale={2} />
+          <Boy position={[0, 0.6, 0]} scale={[0.1, 0.1, 0.1]} />
         </Suspense>
         <OrbitControls />
         <spotLight
