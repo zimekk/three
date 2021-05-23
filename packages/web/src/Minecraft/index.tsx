@@ -4,7 +4,7 @@ import { Sky, PointerLockControls } from "@react-three/drei";
 import { Physics } from "@react-three/cannon";
 import { Ground } from "./Ground";
 import { Player } from "./Player";
-import { Cube, Cubes } from "./Cube";
+import { Cubes } from "./Cube";
 import styles from "./index.module.scss";
 
 // https://codesandbox.io/s/minecraft-vkgi6?file=/src/App.js:0-750
@@ -17,7 +17,6 @@ function App() {
       <Physics gravity={[0, -30, 0]}>
         <Ground />
         <Player />
-        <Cube position={[0, 0.5, -10]} />
         <Cubes />
       </Physics>
       <PointerLockControls />

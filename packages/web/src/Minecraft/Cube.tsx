@@ -8,7 +8,7 @@ import dirt from "./assets/dirt.jpg";
 
 // https://codesandbox.io/s/minecraft-vkgi6?file=/src/Cube.js:0-1613
 const useCubeStore = create((set) => ({
-  cubes: [],
+  cubes: [[0, 0.5, -10]],
   addCube: (x, y, z) =>
     set((state) => ({ cubes: [...state.cubes, [x, y, z]] })),
 }));

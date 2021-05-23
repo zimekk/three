@@ -1,13 +1,4 @@
-import * as THREE from "three";
 import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
-import { Canvas, useFrame, useLoader, useThree } from "react-three-fiber";
-import { OrbitControls, useGLTF } from "@react-three/drei";
-import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
-import { Physics, usePlane, useBox } from "@react-three/cannon";
-import { config, useSpring } from "@react-spring/core";
-import { a } from "@react-spring/three";
-import niceColors from "nice-color-palettes";
 import history from "history/browser";
 import styles from "./App.module.scss";
 
