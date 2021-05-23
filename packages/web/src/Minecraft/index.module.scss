@@ -1,0 +1,32 @@
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #272730c0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  & > div {
+    position: relative;
+    margin-top: 15px;
+    margin-left: 280px;
+    background: black;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+  }
+}
+
+.dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  cursor: pointer;
+  border: 2px solid white;
+}

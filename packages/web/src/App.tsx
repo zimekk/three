@@ -15,6 +15,7 @@ const Spinner = () => <span>Loading...</span>;
 
 const PAGES = {
   "game-1": lazy(() => import("./Game1")),
+  "game-2": lazy(() => import("./Minecraft")),
   "demo-1": lazy(() => import("./Demo1")),
   "demo-2": lazy(() => import("./Demo2")),
   "demo-3": lazy(() => import("./Demo3")),

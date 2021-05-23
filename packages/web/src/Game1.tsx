@@ -56,6 +56,7 @@ function Boy({ parameter, ...props }) {
       const {
         position: { x, y, z },
       } = ref.current;
+      // api.velocity.set(Math.sin(rotation), 0, Math.cos(rotation));
       api.position.set(x - Math.sin(rotation), y, z - Math.cos(rotation));
     }
     set({
