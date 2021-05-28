@@ -1,107 +1,131 @@
-import React, { useEffect, useState } from "react";
-import { Canvas, useThree } from "react-three-fiber";
-import { OrbitControls } from "@react-three/drei";
-import { Physics, usePlane, useBox } from "@react-three/cannon";
-import { a } from "@react-spring/three";
+import React, { Suspense } from "react";
+import { Canvas } from "react-three-fiber";
+import { DoubleSide, RepeatWrapping, sRGBEncoding } from "three";
+import {
+  Loader,
+  OrbitControls,
+  useTexture,
+  PerspectiveCamera,
+} from "@react-three/drei";
 import styles from "./App.module.scss";
 
-function Plane(props) {
-  const [ref] = usePlane(() => ({ rotation: [-Math.PI / 2, 0, 0], ...props }));
-  return (
-    <mesh ref={ref} receiveShadow>
-      <planeBufferGeometry attach="geometry" args={[1009, 1000]} />
-      <shadowMaterial attach="material" color="#171717" />
-    </mesh>
-  );
+// https://techblog.geekyants.com/recreating-real-world-terrain-with-react-threejs-and-webgl-shaders-1
+// https://codesandbox.io/s/three-js-uluru-texturemap-forked-lhimi
+const vertexShader = `
+// Uniforms are data that are shared between shaders
+// The contain data that are uniform across the entire frame.
+// The heightmap and scaling constant for each point are uniforms in this respect.
+
+// A uniform to contain the heightmap image
+uniform sampler2D bumpTexture;
+// A uniform to contain the scaling constant
+uniform float bumpScale;
+
+// Varyings are variables whose values are decided in the vertext shader
+// But whose values are then needed in the fragment shader
+
+// A variable to store the height of the point
+varying float vAmount;
+// The UV mapping coordinates of a vertex
+varying vec2 vUV;
+
+void main()
+{
+    // The "coordinates" in UV mapping representation
+    vUV = uv;
+
+    // The heightmap data at those coordinates
+    vec4 bumpData = texture2D(bumpTexture, uv);
+
+    // height map is grayscale, so it doesn't matter if you use r, g, or b.
+    vAmount = bumpData.r;
+
+    // move the position along the normal
+    vec3 newPosition = position + normal * bumpScale * vAmount;
+
+    // Compute the position of the vertex using a standard formula
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }
+`;
 
-function Cube({ position = [0, 5, 0], ...props }) {
-  const { gl, camera } = useThree();
+const fragmentShader = `
+// A uniform fot the terrain texture image
+uniform sampler2D terrainTexture;
 
-  const [ref] = useBox(() => ({
-    mass: 1,
-    rotation: [0.4, 0.2, 0.5],
-    position,
-    ...props,
-  }));
+// Get the varyings from the vertex shader
+varying vec2 vUV;
+// vAmount isn't really used, but could be if necessary
+varying float vAmount;
 
-  return (
-    <a.mesh receiveShadow castShadow ref={ref}>
-      <boxBufferGeometry attach="geometry" />
-      <meshLambertMaterial attach="material" color="hotpink" />
-    </a.mesh>
-  );
+void main()
+{
+    // Get the color of the fragment from the texture map
+    // at that coordinate in the UV mapping
+    gl_FragColor = texture2D(terrainTexture, vUV);
 }
+`;
 
-export default function Demo() {
-  const [parameter, setParameter] = useState({ x: 0, y: 0, z: 0 });
-
-  useEffect(() => {
-    let frame = undefined;
-    let lastCalledTime = Date.now();
-    let fps = 0;
-    function renderLoop() {
-      let delta = (Date.now() - lastCalledTime) / 1000;
-      lastCalledTime = Date.now();
-      fps = 1 / delta;
-      frame = requestAnimationFrame(renderLoop);
-    }
-    renderLoop();
-    return () => cancelAnimationFrame(frame);
-  }, []);
-
+export default function () {
   return (
     <section className={styles.Demo}>
-      <div className={styles.Range}>
-        <input
-          type="range"
-          min="-10"
-          max="10"
-          value={parameter.x}
-          onChange={(e) =>
-            setParameter((parameter) => ({ ...parameter, x: e.target.value }))
-          }
-        />{" "}
-        <input
-          type="range"
-          min="-10"
-          max="10"
-          value={parameter.y}
-          onChange={(e) =>
-            setParameter((parameter) => ({ ...parameter, y: e.target.value }))
-          }
-        />{" "}
-        <input
-          type="range"
-          min="-10"
-          max="10"
-          value={parameter.z}
-          onChange={(e) =>
-            setParameter((parameter) => ({ ...parameter, z: e.target.value }))
-          }
-        />{" "}
-        {JSON.stringify(parameter)}
-      </div>
-      <Canvas
-        shadowMap
-        gl={{ alpha: false }}
-        camera={{ position: [-1, 2, 5], fov: 50 }}
-      >
-        <OrbitControls />
-        <color attach="background" args={["lightblue"]} />
-        <hemisphereLight intensity={0.35} />
-        <spotLight
-          position={[10, 10, 10]}
-          angle={0.3}
-          penumbra={1}
-          intensity={2}
-          castShadow
+      <Canvas>
+        <Suspense fallback={null}>
+          <group>
+            <Terrain />
+          </group>
+          <ambientLight />
+        </Suspense>
+        <PerspectiveCamera
+          position={[0.5, 0.5, 0.5]}
+          near={0.01}
+          far={1000}
+          makeDefault
         />
-        <Physics>
-          <Plane />
-          <Cube position={Object.values(parameter)} />
-        </Physics>
+        <OrbitControls screenSpacePanning={false} />
       </Canvas>
+      <Loader />
     </section>
+  );
+}
+
+function Terrain() {
+  // Load the heightmap image
+  const heightMap = useTexture(require("./assets/uluru-heightmap.png").default);
+  // Apply some properties to ensure it renders correctly
+  heightMap.encoding = sRGBEncoding;
+  heightMap.wrapS = RepeatWrapping;
+  heightMap.wrapT = RepeatWrapping;
+  heightMap.anisotropy = 16;
+
+  // Load the texture map
+  const textureMap = useTexture(require("./assets/texturemap1024.png").default);
+  // Apply some properties to ensure it renders correctly
+  textureMap.encoding = sRGBEncoding;
+  textureMap.wrapS = RepeatWrapping;
+  textureMap.wrapT = RepeatWrapping;
+  textureMap.anisotropy = 16;
+
+  return (
+    <mesh
+      position={[0, 0, 0]}
+      rotation={[-Math.PI / 2, 0, 0]}
+      scale={[1 / 1024, 1 / 1024, 1 / 1024]}
+    >
+      <planeBufferGeometry args={[1024, 1024, 256, 256]} />
+      <shaderMaterial
+        uniforms={{
+          // Feed the heightmap
+          bumpTexture: { value: heightMap },
+          // Feed the scaling constant for the heightmap
+          bumpScale: { value: 50 },
+          // Feed the texture map
+          terrainTexture: { value: textureMap },
+        }}
+        // Feed the shaders as strings
+        vertexShader={vertexShader}
+        fragmentShader={fragmentShader}
+        side={DoubleSide}
+      />
+    </mesh>
   );
 }
