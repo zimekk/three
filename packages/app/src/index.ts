@@ -8,7 +8,7 @@ const web =
         return Router()
           .use(
             require("webpack-dev-middleware")(compiler, {
-              // mode: 'development'
+              // mode: 'development',
               // webpack-dev-middleware options
               publicPath: config.output?.publicPath,
             })

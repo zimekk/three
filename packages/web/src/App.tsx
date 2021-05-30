@@ -1,4 +1,5 @@
 import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
+import { hot } from "react-hot-loader/root";
 import history from "history/browser";
 import styles from "./App.module.scss";
 
@@ -18,7 +19,7 @@ const getPage = (location: { hash: string }) => {
   return hash;
 };
 
-export default function App() {
+function App() {
   const ref = useRef(null);
   const [page, setPage] = useState(getPage(history.location));
 
@@ -64,3 +65,5 @@ export default function App() {
     </section>
   );
 }
+
+export default hot(App);

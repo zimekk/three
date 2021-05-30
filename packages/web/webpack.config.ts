@@ -12,7 +12,10 @@ const config: webpack.Configuration = {
   devServer: {
     port: 8080,
   },
-  entry: require.resolve("./src"),
+  entry: (dev
+    ? ["react-hot-loader/patch", "webpack-hot-middleware/client"]
+    : []
+  ).concat([require.resolve("./src")]),
   module: {
     rules: [
       {
@@ -44,11 +47,15 @@ const config: webpack.Configuration = {
         exclude: /node_modules/,
         options: {
           presets: ["@babel/preset-react", "@babel/preset-typescript"],
+          plugins: ["react-hot-loader/babel"],
         },
       },
     ],
   },
   resolve: {
+    alias: {
+      "react-dom": "@hot-loader/react-dom",
+    },
     extensions: [".tsx", ".ts", ".js"],
   },
   output: {
@@ -69,7 +76,7 @@ const config: webpack.Configuration = {
         ),
       ],
     }),
-  ],
+  ].concat(dev ? [new webpack.HotModuleReplacementPlugin()] : []),
 };
 
 export default config;
