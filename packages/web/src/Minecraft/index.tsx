@@ -5,7 +5,7 @@ import { Physics } from "@react-three/cannon";
 import { Ground } from "./Ground";
 import { Player } from "./Player";
 import { Cubes } from "./Cube";
-import styles from "./index.module.scss";
+import styles from "./styles.module.scss";
 
 // https://codesandbox.io/s/minecraft-vkgi6?file=/src/App.js:0-750
 function App() {

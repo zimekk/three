@@ -9,6 +9,7 @@ const PAGES = {
   "game-1": lazy(() => import("./Game1")),
   "game-2": lazy(() => import("./Minecraft")),
   "game-3": lazy(() => import("./RaycastVehicle")),
+  "game-4": lazy(() => import("./Aircraft")),
   "demo-1": lazy(() => import("./Demo1")),
   "demo-2": lazy(() => import("./FloatingLaptop")),
   "demo-3": lazy(() => import("./Demo3")),
