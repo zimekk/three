@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import React, { Suspense, useEffect, useRef, useState } from "react";
-import { Canvas, useFrame, useThree } from "react-three-fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Physics, usePlane, useBox } from "@react-three/cannon";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { config, useSpring } from "@react-spring/core";
@@ -59,7 +59,7 @@ function Boy({ parameter, ...props }) {
       // api.velocity.set(Math.sin(rotation), 0, Math.cos(rotation));
       api.position.set(x - Math.sin(rotation), y, z - Math.cos(rotation));
     }
-    set({
+    set.start({
       pos: calcPos(ref.current),
       cam: calcCam(ref.current),
     });

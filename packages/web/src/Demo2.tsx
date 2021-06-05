@@ -1,62 +1,124 @@
-import React, { useEffect, useState } from "react";
-import { Canvas, useThree } from "react-three-fiber";
+import React, { useEffect, useRef, useState } from "react";
+import { Vector3 } from "three";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { Physics, usePlane, useBox } from "@react-three/cannon";
-import { a } from "@react-spring/three";
+import { config, useSpring } from "@react-spring/core";
 import niceColors from "nice-color-palettes";
 import styles from "./App.module.scss";
 
-function Plane(props) {
-  const [ref] = usePlane(() => ({ rotation: [-Math.PI / 2, 0, 0], ...props }));
+const colors = niceColors[0];
+
+function useKeyPress(target, event) {
+  useEffect(() => {
+    const downHandler = ({ key }) => target.indexOf(key) !== -1 && event(true);
+    const upHandler = ({ key }) => target.indexOf(key) !== -1 && event(false);
+    window.addEventListener("keydown", downHandler);
+    window.addEventListener("keyup", upHandler);
+    return () => {
+      window.removeEventListener("keydown", downHandler);
+      window.removeEventListener("keyup", upHandler);
+    };
+  }, []);
+}
+
+function useControls() {
+  const keys = useRef({
+    forward: false,
+    backward: false,
+    left: false,
+    right: false,
+    brake: false,
+    reset: false,
+  });
+  useKeyPress(["ArrowUp", "w"], (pressed) => (keys.current.forward = pressed));
+  useKeyPress(
+    ["ArrowDown", "s"],
+    (pressed) => (keys.current.backward = pressed)
+  );
+  useKeyPress(["ArrowLeft", "a"], (pressed) => (keys.current.left = pressed));
+  useKeyPress(["ArrowRight", "d"], (pressed) => (keys.current.right = pressed));
+  useKeyPress([" ", "Shift"], (pressed) => (keys.current.brake = pressed));
+  useKeyPress(["r"], (pressed) => (keys.current.reset = pressed));
+  return keys;
+}
+
+function Ground({ position = [0, -1, 0], ...props }) {
+  const [ref] = usePlane(() => ({
+    material: { friction: 0.5 },
+    rotation: [-Math.PI / 2, 0, 0],
+    position,
+    ...props,
+  }));
   return (
     <mesh ref={ref} receiveShadow>
-      <planeBufferGeometry attach="geometry" args={[1009, 1000]} />
-      <shadowMaterial attach="material" color="#171717" />
+      <planeBufferGeometry attach="geometry" args={[10, 10]} />
+      <meshLambertMaterial attach="material" color={colors[1]} />
     </mesh>
   );
 }
 
 function Cube({ position = [0, 5, 0], ...props }) {
-  const { gl, camera } = useThree();
+  const { camera } = useThree();
+  const controls = useControls();
+  const [open, setOpen] = useState(false);
+  const [{ pos }, set] = useSpring(() => ({
+    pos: [0, 0, 0],
+    config: config.molasses,
+  }));
 
-  const [ref] = useBox(() => ({
+  const [ref, api] = useBox(() => ({
     mass: 1,
+    material: { friction: 0.002 },
     rotation: [0.4, 0.2, 0.5],
     position,
     ...props,
   }));
 
+  useFrame(({ clock: { elapsedTime } }) => {
+    if (
+      controls.current.forward ||
+      controls.current.backward ||
+      controls.current.left ||
+      controls.current.right ||
+      controls.current.brake
+    ) {
+      api.applyForce(
+        [
+          controls.current.left ? -5 : controls.current.right ? 5 : 0,
+          controls.current.brake ? 15 : 0,
+          controls.current.forward ? -5 : controls.current.backward ? 5 : 0,
+        ],
+        [0, 0, 0]
+      );
+    }
+    set.start({
+      pos: (({ x, y, z }) => [x, y, z])(ref.current.position),
+    });
+    camera.lookAt((([x, y, z]) => new Vector3(x, y, z))(pos.get()));
+  });
+
   return (
-    <a.mesh receiveShadow castShadow ref={ref}>
+    <mesh
+      ref={ref}
+      receiveShadow
+      castShadow
+      onClick={(e) => (e.stopPropagation(), setOpen(!open))}
+    >
       <boxBufferGeometry attach="geometry" />
-      <meshLambertMaterial attach="material" color="hotpink" />
-    </a.mesh>
+      <meshLambertMaterial
+        attach="material"
+        color={open ? colors[3] : colors[4]}
+      />
+    </mesh>
   );
 }
 
 export default function Demo() {
-  const [parameter, setParameter] = useState({ x: 4, y: 0, z: -3 });
-
-  useEffect(() => {
-    let frame = undefined;
-    function renderLoop() {
-      frame = requestAnimationFrame(renderLoop);
-    }
-    renderLoop();
-    return () => cancelAnimationFrame(frame);
-  }, []);
-
-  const colors = niceColors[1];
-
   return (
     <section className={styles.Demo}>
-      <Canvas
-        shadowMap
-        gl={{ alpha: false }}
-        camera={{ position: [-1, 2, 5], fov: 50 }}
-      >
+      <Canvas gl={{ alpha: false }} camera={{ position: [-1, 2, 5], fov: 50 }}>
         <OrbitControls />
-        <color attach="background" args={["lightblue"]} />
         <hemisphereLight intensity={0.35} />
         <spotLight
           position={[10, 10, 10]}
@@ -66,10 +128,8 @@ export default function Demo() {
           castShadow
         />
         <Physics>
-          <Plane />
+          <Ground />
           <Cube />
-          <Cube position={[0, 10, -2]} />
-          <Cube position={Object.values(parameter)} />
         </Physics>
       </Canvas>
     </section>

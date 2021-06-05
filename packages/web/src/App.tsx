@@ -11,8 +11,9 @@ const PAGES = {
   "game-3": lazy(() => import("./RaycastVehicle")),
   "game-4": lazy(() => import("./Aircraft")),
   "demo-1": lazy(() => import("./Demo1")),
-  "demo-2": lazy(() => import("./FloatingLaptop")),
+  "demo-2": lazy(() => import("./Demo2")),
   "demo-3": lazy(() => import("./Demo3")),
+  "demo-4": lazy(() => import("./FloatingLaptop")),
 };
 
 const getPage = (location: { hash: string }) => {

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import React, { Suspense, useEffect, useRef, useState } from "react";
-import { Canvas, useFrame, useLoader, useThree } from "react-three-fiber";
+import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
