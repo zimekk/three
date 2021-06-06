@@ -1510,10 +1510,10 @@
   resolved "https://registry.yarnpkg.com/@react-three/cannon/-/cannon-1.2.4.tgz#2ffe40413f1e7d4cb46a8241840669461ec4cfba"
   integrity sha512-KzAy1zA0ThjwU0nNejtRokfRw9T4AIgeqZwXqbuB3FBYkJ2hxLae5KxAcqqv5Cr64y03XSUDuqTDnqkwPaimdQ==
 
-"@react-three/drei@^5.3.1":
-  version "5.3.1"
-  resolved "https://registry.yarnpkg.com/@react-three/drei/-/drei-5.3.1.tgz#9a7c06b087195eca4185339014b91e8f7c20f8e4"
-  integrity sha512-+92kxpmusIHYB2y47QnCBFev9M9/aBddpi45Xn3xzbbtyUjun7h+yOFSNcfJU/+UBfTU1kT0akLJfp3SVcoAsw==
+"@react-three/drei@^5.3.4":
+  version "5.3.4"
+  resolved "https://registry.yarnpkg.com/@react-three/drei/-/drei-5.3.4.tgz#70712d4dd83dbd2fc6f0a98a75e2d76effd64459"
+  integrity sha512-9ysZbP5Sei+Nt/ks3ADCpMDW3OSedptAO8izzC7WBgYiTfjdxgDfcnj8CLRLz7YNIOIxl5PeOVSlg1nDB3MP0A==
   dependencies:
     "@babel/runtime" "^7.11.2"
     blob-polyfill "^5.0.20210201"
@@ -4762,10 +4762,10 @@ glsl-noise@^0.0.0:
   resolved "https://registry.yarnpkg.com/glsl-noise/-/glsl-noise-0.0.0.tgz#367745f3a33382c0eeec4cb54b7e99cfc1d7670b"
   integrity sha1-NndF86MzgsDu7Ey1S36Zz8HXZws=
 
-gltfjsx@^4.2.1:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/gltfjsx/-/gltfjsx-4.2.1.tgz#27c7fa88e60b27b4ee507b3e6463a848dff966c5"
-  integrity sha512-K0wavGSL74n8zIgJ/eY9eal4P2k3MROxln2cNKFx5f0f5jrJuUYsEr/oTqXysYKcnGdVc7gTdi7tAG++OjiZJQ==
+gltfjsx@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/gltfjsx/-/gltfjsx-4.2.2.tgz#9442fa4eb6b744fe271c964fbbfcdadf6df1b07a"
+  integrity sha512-uGZcdNyGSAJ+hv3rDbmP9VtKSyHHla6wkopWa+TZU4mXeVM4RddinPanEHHaYAU6T+Rsiq39MdC/BuT4qq9luw==
   dependencies:
     draco3dgltf "^1.4.0"
     import-jsx "^4.0.0"
