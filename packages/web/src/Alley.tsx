@@ -1,7 +1,13 @@
 import * as THREE from "three";
-import React, { Suspense } from "react";
-import { Canvas, useLoader } from "@react-three/fiber";
-import { OrbitControls, Sky, Stars } from "@react-three/drei";
+import React, { Suspense, useEffect, useRef, useState } from "react";
+import { Canvas, useFrame, useLoader } from "@react-three/fiber";
+import {
+  OrbitControls,
+  Sky,
+  Stars,
+  useAnimations,
+  useGLTF,
+} from "@react-three/drei";
 import {
   Physics,
   usePlane,
@@ -18,6 +24,93 @@ const colors = niceColors[0];
 // https://stackoverflow.com/questions/1527803/generating-random-whole-numbers-in-javascript-in-a-specific-range
 function random(min, max) {
   return Math.random() * (max - min) + min;
+}
+
+function useKeyPress(target, event) {
+  useEffect(() => {
+    const downHandler = ({ key }) => target.indexOf(key) !== -1 && event(true);
+    const upHandler = ({ key }) => target.indexOf(key) !== -1 && event(false);
+    window.addEventListener("keydown", downHandler);
+    window.addEventListener("keyup", upHandler);
+    return () => {
+      window.removeEventListener("keydown", downHandler);
+      window.removeEventListener("keyup", upHandler);
+    };
+  }, []);
+}
+
+function useControls() {
+  const keys = useRef({
+    forward: false,
+    backward: false,
+    left: false,
+    right: false,
+    brake: false,
+    reset: false,
+  });
+  useKeyPress(["ArrowUp", "w"], (pressed) => (keys.current.forward = pressed));
+  useKeyPress(
+    ["ArrowDown", "s"],
+    (pressed) => (keys.current.backward = pressed)
+  );
+  useKeyPress(["ArrowLeft", "a"], (pressed) => (keys.current.left = pressed));
+  useKeyPress(["ArrowRight", "d"], (pressed) => (keys.current.right = pressed));
+  useKeyPress([" ", "Shift"], (pressed) => (keys.current.brake = pressed));
+  useKeyPress(["r"], (pressed) => (keys.current.reset = pressed));
+  return keys;
+}
+
+function Person({ ...props }) {
+  const [action, setAction] = useState(null);
+  const controls = useControls();
+
+  const [group, api] = useBox(() => ({
+    mass: 1,
+    position: [1.2, 0.2, -1],
+    rotation: [0, Math.PI, 0],
+    ...props,
+  }));
+
+  // https://github.com/swift502/Sketchbook/blob/master/build/assets/boxman.glb
+  const { scene, animations } = useGLTF(require("./assets/boxman.glb").default);
+
+  const { ref, mixer, names, actions, clips } = useAnimations(animations);
+
+  useEffect(() => {
+    // console.log({ action, names });
+    if (action) {
+      actions[action].play();
+    }
+  }, [action]);
+
+  useFrame((state) => {
+    const t = state.clock.getElapsedTime();
+
+    // Object.assign(window, { api });
+    if (controls.current.brake) {
+      api.fixedRotation.set(true);
+      api.applyImpulse([0, 5, 0], [0, 0, 0]);
+      setAction("jump_idle");
+    }
+    if (controls.current.forward) {
+      setAction("run");
+    }
+    if (controls.current.backward) {
+      setAction("stop");
+    }
+    if (controls.current.left) {
+      setAction("stand_up_left");
+    }
+    if (controls.current.right) {
+      setAction("stand_up_right");
+    }
+  });
+
+  return (
+    <group ref={group}>
+      <primitive ref={ref} object={scene} />;
+    </group>
+  );
 }
 
 // https://medium.com/@kfarr/experimenting-with-pbr-textures-and-a-frame-26c5a034b7b
@@ -246,6 +339,7 @@ export default function Demo() {
             <Trees />
             <Lamps />
           </Suspense>
+          <Person />
         </Physics>
         <OrbitControls />
       </Canvas>
