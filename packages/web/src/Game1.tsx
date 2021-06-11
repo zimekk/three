@@ -71,7 +71,7 @@ function Boy({ parameter, ...props }) {
       } = ref.current;
       api.position.set(x + Math.sin(rotation), y, z + Math.cos(rotation));
     }
-    set({
+    set.start({
       pos: calcPos(ref.current),
       cam: calcCam(ref.current),
     });
