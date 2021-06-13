@@ -61,7 +61,7 @@ function useControls() {
 }
 
 function Person({ ...props }) {
-  const [action, setAction] = useState(null);
+  const [action, setAction] = useState("idle");
   const controls = useControls();
 
   const [group, api] = useBox(() => ({
@@ -73,15 +73,39 @@ function Person({ ...props }) {
 
   // https://github.com/swift502/Sketchbook/blob/master/build/assets/boxman.glb
   const { scene, animations } = useGLTF(require("./assets/boxman.glb").default);
-
+  // https://codeworkshop.dev/blog/2021-01-20-react-three-fiber-character-animation/
+  // https://threejs.org/examples/#webgl_animation_skinning_blending
   const { ref, mixer, names, actions, clips } = useAnimations(animations);
+
+  useEffect(() => {
+    // https://threejs.org/docs/#api/en/animation/AnimationAction
+    const finished = (e) => {
+      // console.log(["finished"], { e });
+      // Object.assign(window, { action: e.action });
+      setAction(e.action.getClip().name.includes("jump") ? "run" : "idle");
+    };
+    mixer.addEventListener("finished", finished);
+    return () => {
+      mixer.removeEventListener("finished", finished);
+    };
+  }, [mixer]);
 
   useEffect(() => {
     // console.log({ action, names });
     if (action) {
-      actions[action].play();
+      const blendDuration = 1;
+
+      actions[action]
+        ?.reset()
+        .fadeIn(blendDuration)
+        .setLoop(
+          ["run", "idle"].includes(action) ? THREE.LoopRepeat : THREE.LoopOnce
+        )
+        .play();
+
+      return () => void actions[action]?.fadeOut(blendDuration);
     }
-  }, [action]);
+  }, [actions, action]);
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
@@ -96,7 +120,7 @@ function Person({ ...props }) {
       setAction("run");
     }
     if (controls.current.backward) {
-      setAction("stop");
+      setAction("idle");
     }
     if (controls.current.left) {
       setAction("stand_up_left");
@@ -338,8 +362,8 @@ export default function Demo() {
             <Buildings />
             <Trees />
             <Lamps />
+            <Person />
           </Suspense>
-          <Person />
         </Physics>
         <OrbitControls />
       </Canvas>
