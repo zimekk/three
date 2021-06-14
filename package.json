@@ -30,6 +30,9 @@
   "workspaces": [
     "packages/*"
   ],
+  "resolutions": {
+    "@react-three/cannon": "2.1.2"
+  },
   "devDependencies": {
     "@commitlint/cli": "^12.1.4",
     "@commitlint/config-conventional": "^12.1.4",
