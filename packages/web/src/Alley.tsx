@@ -9,6 +9,7 @@ import {
   useGLTF,
 } from "@react-three/drei";
 import {
+  Debug,
   Physics,
   usePlane,
   useBox,
@@ -66,6 +67,7 @@ function Person({ ...props }) {
 
   const [group, api] = useBox(() => ({
     mass: 1,
+    material: { friction: 0.002 },
     position: [1.2, 0.2, -1],
     rotation: [0, Math.PI, 0],
     ...props,
@@ -111,26 +113,33 @@ function Person({ ...props }) {
     const t = state.clock.getElapsedTime();
 
     // Object.assign(window, { api });
-    if (controls.current.brake) {
-      api.fixedRotation.set(true);
-      api.applyImpulse([0, 5, 0], [0, 0, 0]);
+    if (controls.current.brake && group.current?.position.y < 0.5) {
+      api.applyForce([0, 500, 0], [0, 0, 0]);
       setAction("jump_idle");
     }
     if (controls.current.forward) {
+      api.applyForce([0, 0, 20], [0, 0, 0]);
       setAction("run");
     }
     if (controls.current.backward) {
+      api.applyForce([0, 0, -20], [0, 0, 0]);
       setAction("idle");
     }
     if (controls.current.left) {
+      api.applyForce([20, 0, 0], [0, 0, 0]);
       setAction("stand_up_left");
     }
     if (controls.current.right) {
+      api.applyForce([-20, 0, 0], [0, 0, 0]);
       setAction("stand_up_right");
     }
   });
 
-  return (
+  return false ? (
+    <mesh ref={group}>
+      <boxBufferGeometry attach="geometry" />
+    </mesh>
+  ) : (
     <group ref={group}>
       <primitive ref={ref} object={scene} />;
     </group>
@@ -354,16 +363,18 @@ export default function Demo() {
           fade
         />
         <ambientLight intensity={0.01} />
-        <Physics gravity={[0, -30, 0]}>
-          <Suspense fallback="loading...">
-            <Ground />
-            <Street />
-            <Sidewalk />
-            <Buildings />
-            <Trees />
-            <Lamps />
-            <Person />
-          </Suspense>
+        <Physics>
+          <Debug scale={1.1} color="black">
+            <Suspense fallback="loading...">
+              <Ground />
+              <Street />
+              <Sidewalk />
+              <Buildings />
+              <Trees />
+              <Lamps />
+              <Person />
+            </Suspense>
+          </Debug>
         </Physics>
         <OrbitControls />
       </Canvas>
