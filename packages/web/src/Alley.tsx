@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import React, { Suspense, useEffect, useRef, useState } from "react";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
+import { config, useSpring } from "@react-spring/core";
+import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import {
   OrbitControls,
   Sky,
@@ -27,50 +28,60 @@ function random(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-function useKeyPress(target, event) {
-  useEffect(() => {
-    const downHandler = ({ key }) => target.indexOf(key) !== -1 && event(true);
-    const upHandler = ({ key }) => target.indexOf(key) !== -1 && event(false);
-    window.addEventListener("keydown", downHandler);
-    window.addEventListener("keyup", upHandler);
-    return () => {
-      window.removeEventListener("keydown", downHandler);
-      window.removeEventListener("keyup", upHandler);
-    };
-  }, []);
-}
+// https://codesandbox.io/s/minecraft-vkgi6?file=/src/Player.js:0-1996
+const SPEED = 5;
+const keys = {
+  KeyW: "forward",
+  KeyS: "backward",
+  KeyA: "left",
+  KeyD: "right",
+  ArrowUp: "forward",
+  ArrowDown: "backward",
+  ArrowLeft: "left",
+  ArrowRight: "right",
+  Space: "jump",
+};
+const direction = new THREE.Vector3();
+const frontVector = new THREE.Vector3();
+const sideVector = new THREE.Vector3();
+const rotateVector = new THREE.Vector3(0, 1, 0);
 
-function useControls() {
-  const keys = useRef({
+const usePlayerControls = () => {
+  const [movement, setMovement] = useState({
     forward: false,
     backward: false,
     left: false,
     right: false,
-    brake: false,
-    reset: false,
+    jump: false,
   });
-  useKeyPress(["ArrowUp", "w"], (pressed) => (keys.current.forward = pressed));
-  useKeyPress(
-    ["ArrowDown", "s"],
-    (pressed) => (keys.current.backward = pressed)
-  );
-  useKeyPress(["ArrowLeft", "a"], (pressed) => (keys.current.left = pressed));
-  useKeyPress(["ArrowRight", "d"], (pressed) => (keys.current.right = pressed));
-  useKeyPress([" ", "Shift"], (pressed) => (keys.current.brake = pressed));
-  useKeyPress(["r"], (pressed) => (keys.current.reset = pressed));
-  return keys;
-}
+  useEffect(() => {
+    const handleKeyDown = (e) =>
+      setMovement((m) => ({ ...m, [keys[e.code]]: true }));
+    const handleKeyUp = (e) =>
+      setMovement((m) => ({ ...m, [keys[e.code]]: false }));
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
+  return movement;
+};
 
 function Person({ ...props }) {
+  const { camera } = useThree();
+  const { forward, backward, left, right, jump } = usePlayerControls();
   const [action, setAction] = useState("idle");
-  const controls = useControls();
-
-  const [group, api] = useBox(() => ({
+  const [group, api] = useSphere(() => ({
     mass: 1,
-    material: { friction: 0.002 },
-    position: [1.2, 0.2, -1],
-    rotation: [0, Math.PI, 0],
+    position: [1.2, 5, -1],
     ...props,
+  }));
+  const [{ targetPosition, cameraPosition }, set] = useSpring(() => ({
+    targetPosition: [0, 0, 0],
+    cameraPosition: [0, 0, 0],
+    config: config.molasses,
   }));
 
   // https://github.com/swift502/Sketchbook/blob/master/build/assets/boxman.glb
@@ -79,12 +90,16 @@ function Person({ ...props }) {
   // https://threejs.org/examples/#webgl_animation_skinning_blending
   const { ref, mixer, names, actions, clips } = useAnimations(animations);
 
+  const velocity = useRef([0, 0, 0]);
+  useEffect(
+    () => void api.velocity.subscribe((v) => (velocity.current = v)),
+    []
+  );
+
   useEffect(() => {
     // https://threejs.org/docs/#api/en/animation/AnimationAction
     const finished = (e) => {
-      // console.log(["finished"], { e });
-      // Object.assign(window, { action: e.action });
-      setAction(e.action.getClip().name.includes("jump") ? "run" : "idle");
+      setAction(e.action.getClip().name.includes("jump") ? "idle" : "idle");
     };
     mixer.addEventListener("finished", finished);
     return () => {
@@ -93,7 +108,6 @@ function Person({ ...props }) {
   }, [mixer]);
 
   useEffect(() => {
-    // console.log({ action, names });
     if (action) {
       const blendDuration = 1;
 
@@ -112,35 +126,53 @@ function Person({ ...props }) {
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
 
-    // Object.assign(window, { api });
-    if (controls.current.brake && group.current?.position.y < 0.5) {
-      api.applyForce([0, 500, 0], [0, 0, 0]);
-      setAction("jump_idle");
+    // camera.lookAt(group.current?.position)
+    camera.lookAt(...targetPosition.get());
+    camera.position.set(...cameraPosition.get());
+    if (group.current) {
+      set.start({
+        targetPosition: (({ x, y, z }, h = 1) => [x, y + h, z])(
+          group.current?.position
+        ),
+        cameraPosition: (({ x, y, z }, { y: rotation }, d = -5, h = 3) => [
+          x + Math.sin(rotation) * d,
+          y + h,
+          z + Math.cos(rotation) * d,
+        ])(group.current?.position, ref.current?.rotation),
+      });
     }
-    if (controls.current.forward) {
-      api.applyForce([0, 0, 20], [0, 0, 0]);
+
+    ref.current.position.copy(group.current.position);
+    ref.current.rotation.y += ((Number(left) - Number(right)) * Math.PI) / 30;
+    frontVector.set(0, 0, Number(forward) - Number(backward));
+    // sideVector.set(Number(left) - Number(right), 0, 0);
+    direction
+      .subVectors(frontVector, sideVector)
+      .normalize()
+      .multiplyScalar(SPEED)
+      .applyEuler(ref.current.rotation);
+    api.velocity.set(direction.x, velocity.current[1], direction.z);
+    if (jump && Math.abs(velocity.current[1].toFixed(2)) < 0.05) {
+      api.velocity.set(velocity.current[0], 10, velocity.current[2]);
+    }
+
+    if (forward) {
       setAction("run");
     }
-    if (controls.current.backward) {
-      api.applyForce([0, 0, -20], [0, 0, 0]);
+    if (backward) {
       setAction("idle");
     }
-    if (controls.current.left) {
-      api.applyForce([20, 0, 0], [0, 0, 0]);
+    if (left) {
       setAction("stand_up_left");
     }
-    if (controls.current.right) {
-      api.applyForce([-20, 0, 0], [0, 0, 0]);
+    if (right) {
       setAction("stand_up_right");
     }
   });
 
-  return false ? (
-    <mesh ref={group}>
-      <boxBufferGeometry attach="geometry" />
-    </mesh>
-  ) : (
-    <group ref={group}>
+  return (
+    <group>
+      <mesh ref={group} />
       <primitive ref={ref} object={scene} />;
     </group>
   );
@@ -363,7 +395,7 @@ export default function Demo() {
           fade
         />
         <ambientLight intensity={0.01} />
-        <Physics>
+        <Physics gravity={[0, -30, 0]}>
           <Debug scale={1.1} color="black">
             <Suspense fallback="loading...">
               <Ground />
