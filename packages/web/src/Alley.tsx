@@ -23,6 +23,89 @@ import styles from "./App.module.scss";
 
 const colors = niceColors[0];
 
+// https://github.com/luser/gamepadtest/blob/master/gamepadtest.js
+const useGamepad = () => {
+  const [index, setIndex] = useState(null);
+  const [axes, setAxes] = useState(
+    [...Array(4)].reduce((r, v, i) => Object.assign(r, { [i]: 0 }), {})
+  );
+  const [buttons, setButtons] = useState(
+    [...Array(16)].reduce((r, v, i) => Object.assign(r, { [i]: 0 }), {})
+  );
+
+  useEffect(() => {
+    if ("GamepadEvent" in window) {
+      const handleGamepadConnected = (e) => {
+        // console.log("handleGamepadConnected", { e });
+        setIndex(e.gamepad.index);
+      };
+      const handleGamepadDisconnected = (e) => {
+        // console.log("handleGamepadDisconnected", { e });
+        setIndex(null);
+      };
+
+      window.addEventListener("gamepadconnected", handleGamepadConnected);
+      window.addEventListener("gamepaddisconnected", handleGamepadDisconnected);
+
+      return () => {
+        window.removeEventListener("gamepadconnected", handleGamepadConnected);
+        window.removeEventListener(
+          "gamepaddisconnected",
+          handleGamepadDisconnected
+        );
+      };
+    } else {
+      const i = setInterval(() => {
+        const gamepads = navigator.getGamepads();
+        for (let i = 0; i < gamepads.length; i++) {
+          if (gamepads[i] && gamepads[i].index in controllers.current) {
+            controllers.current[gamepads[i].index] = gamepads[i];
+          }
+        }
+      }, 500);
+      return () => {
+        clearInterval(i);
+      };
+    }
+  }, []);
+
+  useFrame(() => {
+    if (index !== null) {
+      const gamepad = navigator.getGamepads().item(index);
+      setAxes((axes) =>
+        gamepad.axes
+          .map((v) => (Math.abs(v) > 0.2 ? v : 0))
+          .reduce(
+            (axes, axe, index) =>
+              axes[index] === axe
+                ? axes
+                : {
+                    ...axes,
+                    [index]: axe,
+                  },
+            axes
+          )
+      );
+      setButtons((buttons) =>
+        gamepad.buttons.reduce(
+          (buttons, button, index) =>
+            buttons[index] === button.value
+              ? buttons
+              : {
+                  ...buttons,
+                  [index]: button.value,
+                },
+          buttons
+        )
+      );
+    }
+  });
+
+  // console.log({ axes, buttons });
+
+  return { axes, buttons };
+};
+
 // https://stackoverflow.com/questions/1527803/generating-random-whole-numbers-in-javascript-in-a-specific-range
 function random(min, max) {
   return Math.random() * (max - min) + min;
@@ -71,6 +154,7 @@ const usePlayerControls = () => {
 
 function Person({ ...props }) {
   const { camera } = useThree();
+  const { axes, buttons } = useGamepad();
   const { forward, backward, left, right, jump } = usePlayerControls();
   const [action, setAction] = useState("idle");
   const [group, api] = useSphere(() => ({
@@ -134,7 +218,7 @@ function Person({ ...props }) {
         targetPosition: (({ x, y, z }, h = 1) => [x, y + h, z])(
           group.current?.position
         ),
-        cameraPosition: (({ x, y, z }, { y: rotation }, d = -5, h = 3) => [
+        cameraPosition: (({ x, y, z }, { y: rotation }, d = -10, h = 3) => [
           x + Math.sin(rotation) * d,
           y + h,
           z + Math.cos(rotation) * d,
@@ -143,9 +227,9 @@ function Person({ ...props }) {
     }
 
     ref.current.position.copy(group.current.position);
-    ref.current.rotation.y += ((Number(left) - Number(right)) * Math.PI) / 30;
-    frontVector.set(0, 0, Number(forward) - Number(backward));
-    // sideVector.set(Number(left) - Number(right), 0, 0);
+    ref.current.rotation.y +=
+      ((Number(left) - Number(right) - axes[0]) * Math.PI) / 30;
+    frontVector.set(0, 0, Number(forward) - Number(backward) - axes[1]);
     direction
       .subVectors(frontVector, sideVector)
       .normalize()

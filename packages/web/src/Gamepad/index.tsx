@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./styles.module.scss";
 
+// https://whoisryosuke.com/blog/2020/adding-game-controller-input-to-react/
 // https://codesandbox.io/s/react-gamepad-with-cursor-analog-support-better-perf-4buhx?file=/src/App.js:0-1626
 import { GamepadsProvider, GamepadsContext } from "./context/GamepadsContext";
 import GameCursor from "./components/GameCursor";
