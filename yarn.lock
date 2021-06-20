@@ -1383,7 +1383,7 @@
     "@react-spring/types" "~9.2.0"
     rafz "^0.1.13"
 
-"@react-spring/three@^9.2.1":
+"@react-spring/three@9.2.1", "@react-spring/three@^9.2.1":
   version "9.2.1"
   resolved "https://registry.yarnpkg.com/@react-spring/three/-/three-9.2.1.tgz#d8df125de9e8325b51ff308c58561a8683523c80"
   integrity sha512-0gRz2y8G5szbtywvTDbaT3B+1Xseq5Yu2X02Ey8k18IksAncMZ/KFcRJIYFQn+7OlLVaoxPzXibSUNT4notWMg==
@@ -1408,7 +1408,7 @@
     "@react-spring/shared" "~9.2.0"
     "@react-spring/types" "~9.2.0"
 
-"@react-three/cannon@^2.3.1":
+"@react-three/cannon@2.3.1", "@react-three/cannon@^2.3.1":
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/@react-three/cannon/-/cannon-2.3.1.tgz#06d32c4c4651e13bb2f533ffcb770f2312410a24"
   integrity sha512-n5GjVopoM5jZ5T96sdR9tDNxVUKYLAdwZOptoYRqpq5MXDiheB+PLvDXNSZ3EG18J4vSA/gzUtVE7oLxbq0CwQ==
@@ -1645,10 +1645,10 @@
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.1.tgz#283f669ff76d7b8260df8ab7a4262cc83d988256"
   integrity sha512-fZQQafSREFyuZcdWFAExYjBiCL7AUCdgsk80iO0q4yihYYdcIiH28CcuPTGFgLOCC8RlW49GSQxdHwZP+I7CNg==
 
-"@types/node@*", "@types/node@^15.12.3":
-  version "15.12.3"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.12.3.tgz#2817bf5f25bc82f56579018c53f7d41b1830b1af"
-  integrity sha512-SNt65CPCXvGNDZ3bvk1TQ0Qxoe3y1RKH88+wZ2Uf05dduBCqqFQ76ADP9pbT+Cpvj60SkRppMCh2Zo8tDixqjQ==
+"@types/node@*", "@types/node@^15.12.4":
+  version "15.12.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.12.4.tgz#e1cf817d70a1e118e81922c4ff6683ce9d422e26"
+  integrity sha512-zrNj1+yqYF4WskCMOHwN+w9iuD12+dGm0rQ35HLl9/Ouuq52cEtd0CH9qMgrdNmi5ejC1/V7vKEXYubB+65DkA==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -9813,10 +9813,10 @@ webpack-sources@^2.3.0:
     source-list-map "^2.0.1"
     source-map "^0.6.1"
 
-webpack@^5.1.0, webpack@^5.38.1:
-  version "5.38.1"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.38.1.tgz#5224c7f24c18e729268d3e3bc97240d6e880258e"
-  integrity sha512-OqRmYD1OJbHZph6RUMD93GcCZy4Z4wC0ele4FXyYF0J6AxO1vOSuIlU1hkS/lDlR9CDYBz64MZRmdbdnFFoT2g==
+webpack@^5.1.0, webpack@^5.39.1:
+  version "5.39.1"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.39.1.tgz#d1e014b6d71e1aef385316ad528f21cd5b1f9784"
+  integrity sha512-ulOvoNCh2PvTUa+zbpRuEb1VPeQnhxpnHleMPVVCq3QqnaFogjsLyps+o42OviQFoaGtTQYrUqDXu1QNkvUPzw==
   dependencies:
     "@types/eslint-scope" "^3.7.0"
     "@types/estree" "^0.0.47"
