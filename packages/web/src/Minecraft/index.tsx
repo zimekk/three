@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Sky, PointerLockControls } from "@react-three/drei";
-import { Physics } from "@react-three/cannon";
+import { Debug, Physics } from "@react-three/cannon";
 import { Ground } from "./Ground";
 import { Player } from "./Player";
 import { Cubes } from "./Cube";
@@ -10,7 +10,17 @@ import styles from "./styles.module.scss";
 // https://codesandbox.io/s/minecraft-vkgi6?file=/src/App.js:0-750
 function App() {
   return (
-    <Canvas shadows gl={{ alpha: false }} camera={{ fov: 35 }}>
+    <Canvas
+      shadows
+      gl={{ alpha: false }}
+      camera={{ fov: 45 }}
+      raycaster={{
+        computeOffsets: (e) => ({
+          offsetX: e.target.width / 2,
+          offsetY: e.target.height / 2,
+        }),
+      }}
+    >
       <Sky sunPosition={[100, 10, 100]} />
       <ambientLight intensity={0.3} />
       <pointLight castShadow intensity={0.8} position={[100, 100, 100]} />

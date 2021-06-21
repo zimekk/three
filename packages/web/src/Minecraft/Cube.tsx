@@ -53,8 +53,8 @@ export const Cube = (props) => {
       {[...Array(6)].map((_, index) => (
         <meshStandardMaterial
           attachArray="material"
-          map={texture}
           key={index}
+          map={texture}
           color={hover === index ? "hotpink" : "white"}
         />
       ))}
