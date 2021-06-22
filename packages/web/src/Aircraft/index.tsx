@@ -13,7 +13,7 @@ import {
 } from "@react-three/drei";
 import styles from "./styles.module.scss";
 
-const vec = new THREE.Vector3();
+const vector = new THREE.Vector3();
 
 function Aircraft({ ...props }) {
   const group = useRef();
@@ -34,8 +34,10 @@ function Aircraft({ ...props }) {
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
-    state.camera.position.lerp(vec.set(3, 2, -3), 0.01);
-    // state.camera.lookAt(0, 0, 0);
+
+    // state.camera.position.lerp(vector.set(3, 2, -3), 0.01);
+    group.current.getWorldPosition(vector);
+    state.camera.lookAt(vector);
     group.current.rotation.x = THREE.MathUtils.lerp(
       group.current.rotation.x,
       Math.cos(t / 1) / 4,

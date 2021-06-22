@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import React, { Suspense, useEffect, useRef, useState } from "react";
 import { config, useSpring } from "@react-spring/core";
-import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   OrbitControls,
   Sky,

@@ -9,6 +9,8 @@ import styles from "./App.module.scss";
 
 const colors = niceColors[0];
 
+const vector = new Vector3();
+
 function useKeyPress(target, event) {
   useEffect(() => {
     const downHandler = ({ key }) => target.indexOf(key) !== -1 && event(true);
@@ -92,8 +94,9 @@ function Cube({ position = [0, 5, 0], ...props }) {
         [0, 0, 0]
       );
     }
+    ref.current.getWorldPosition(vector);
     set.start({
-      pos: (({ x, y, z }) => [x, y, z])(ref.current.position),
+      pos: (({ x, y, z }) => [x, y, z])(vector),
     });
     camera.lookAt((([x, y, z]) => new Vector3(x, y, z))(pos.get()));
   });
