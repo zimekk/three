@@ -9,19 +9,25 @@ import {
   useAnimations,
   useGLTF,
 } from "@react-three/drei";
-import {
-  Debug,
-  Physics,
-  usePlane,
-  useBox,
-  useSphere,
-  useCylinder,
-} from "@react-three/cannon";
-import niceColors from "nice-color-palettes";
-import grass from "./Minecraft/assets/grass.jpg";
+import { Debug, Physics, useBox, useSphere } from "@react-three/cannon";
 import styles from "./App.module.scss";
 
-const colors = niceColors[0];
+function Model(props) {
+  const [group] = useBox(() => ({
+    args: [25, 1.2, 25],
+    type: "Static",
+    ...props,
+  }));
+  const ref = useRef();
+  const { scene } = useGLTF(require("./assets/lotnisko/1.0.glb").default);
+
+  return (
+    <group>
+      <mesh ref={group}></mesh>
+      <primitive ref={ref} object={scene} />
+    </group>
+  );
+}
 
 // https://github.com/luser/gamepadtest/blob/master/gamepadtest.js
 const useGamepad = () => {
@@ -36,11 +42,9 @@ const useGamepad = () => {
   useEffect(() => {
     if ("GamepadEvent" in window) {
       const handleGamepadConnected = (e) => {
-        // console.log("handleGamepadConnected", { e });
         setIndex(e.gamepad.index);
       };
       const handleGamepadDisconnected = (e) => {
-        // console.log("handleGamepadDisconnected", { e });
         setIndex(null);
       };
 
@@ -101,15 +105,8 @@ const useGamepad = () => {
     }
   });
 
-  // console.log({ axes, buttons });
-
   return { axes, buttons };
 };
-
-// https://stackoverflow.com/questions/1527803/generating-random-whole-numbers-in-javascript-in-a-specific-range
-function random(min, max) {
-  return Math.random() * (max - min) + min;
-}
 
 // https://codesandbox.io/s/minecraft-vkgi6?file=/src/Player.js:0-1996
 const SPEED = 5;
@@ -127,6 +124,7 @@ const keys = {
 const direction = new THREE.Vector3();
 const frontVector = new THREE.Vector3();
 const sideVector = new THREE.Vector3();
+const speed = new THREE.Vector3();
 
 const usePlayerControls = () => {
   const [movement, setMovement] = useState({
@@ -160,6 +158,7 @@ function Person({ ...props }) {
     args: 1,
     mass: 1,
     position: [1.2, 5, -1],
+    scale: [2, 2, 2],
     ...props,
   }));
   const [{ targetPosition, cameraPosition }, set] = useSpring(() => ({
@@ -207,31 +206,25 @@ function Person({ ...props }) {
     }
   }, [actions, action]);
 
+  Object.assign(window, { ref, group });
+
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
 
-    // camera.lookAt(group.current?.position)
-    camera.lookAt(...targetPosition.get());
-    camera.position.set(...cameraPosition.get());
-    group.current.getWorldPosition(ref.current.position);
-    set.start({
-      targetPosition: (({ x, y, z }, h = 1) => [x, y + h, z])(
-        ref.current?.position
-      ),
-      cameraPosition: (({ x, y, z }, { y: rotation }, d = -10, h = 3) => [
-        x + Math.sin(rotation) * d,
-        y + h,
-        z + Math.cos(rotation) * d,
-      ])(ref.current?.position, ref.current?.rotation),
-    });
     ref.current.rotation.y +=
       ((Number(left) - Number(right) - axes[0]) * Math.PI) / 30;
-    frontVector.set(0, 0, Number(forward) - Number(backward) - axes[1]);
+
+    group.current.getWorldPosition(ref.current.position);
+    frontVector.set(0, 0, Number(forward) - Number(backward));
+    // sideVector.set(Number(left) - Number(right), 0, 0);
     direction
       .subVectors(frontVector, sideVector)
       .normalize()
       .multiplyScalar(SPEED)
+      // .applyEuler(camera.rotation);
       .applyEuler(ref.current.rotation);
+    speed.fromArray(velocity.current);
+
     api.velocity.set(direction.x, velocity.current[1], direction.z);
     if (jump && Math.abs(velocity.current[1].toFixed(2)) < 0.05) {
       api.velocity.set(velocity.current[0], 10, velocity.current[2]);
@@ -253,207 +246,8 @@ function Person({ ...props }) {
 
   return (
     <group>
-      <mesh ref={group} />
+      <mesh ref={group}>{/* <sphereGeometry /> */}</mesh>
       <primitive ref={ref} object={scene} />;
-    </group>
-  );
-}
-
-// https://medium.com/@kfarr/experimenting-with-pbr-textures-and-a-frame-26c5a034b7b
-// https://codesandbox.io/s/minecraft-vkgi6?file=/src/Ground.js:0-614
-function Ground(props) {
-  const [ref] = usePlane(() => ({ rotation: [-Math.PI / 2, 0, 0], ...props }));
-  // https://maxrohde.com/2019/10/28/textures-and-lighting-with-react-and-three-js/
-  const texture = useLoader(THREE.TextureLoader, grass);
-  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(240, 240);
-
-  return (
-    <mesh ref={ref} receiveShadow>
-      <planeGeometry args={[100, 100]} />
-      <meshStandardMaterial map={texture} color="green" />
-    </mesh>
-  );
-}
-
-function Street(props) {
-  const [ref] = useBox(() => ({ ...props }));
-
-  return (
-    <mesh ref={ref} receiveShadow>
-      <boxGeometry args={[10, 0.1, 9]} />
-      <meshStandardMaterial color={0x252929} />
-    </mesh>
-  );
-}
-
-function Flagstone({ height: h, ...props }) {
-  const [ref] = useBox(() => ({ ...props }));
-
-  return (
-    <mesh ref={ref} receiveShadow>
-      <boxGeometry args={[0.98, h, 0.98]} />
-      <meshStandardMaterial color={0x828282} />
-    </mesh>
-  );
-}
-
-function Kerbstone({ height: h, ...props }) {
-  const [ref] = useBox(() => ({ ...props }));
-
-  return (
-    <mesh ref={ref} receiveShadow>
-      <boxGeometry args={[1.98, h, 0.18]} />
-      <meshStandardMaterial color={0x828282} />
-    </mesh>
-  );
-}
-
-function Sidewalk({ ...props }) {
-  const height = 0.2;
-
-  return (
-    <group {...props}>
-      {[...Array(10)]
-        .reduce(
-          (m, k, i) => m.concat([...Array(2)].map((k, j) => [i - 4.5, j + 1])),
-          []
-        )
-        .map(([x, z], key) => (
-          <Flagstone key={key} height={height} position={[x, height / 2, z]} />
-        ))}
-      {[...Array(5)]
-        .map((k, i) => [i * 2 - 4, 0.4])
-        .map(([x, z], key) => (
-          <Kerbstone key={key} height={height} position={[x, height / 2, z]} />
-        ))}
-    </group>
-  );
-}
-
-function Building({ ...props }) {
-  const height = random(4, 8);
-  const [ref] = useBox(() => ({ ...props }));
-
-  return (
-    <group position={[0, height / 2, 0]}>
-      <mesh ref={ref} receiveShadow>
-        <boxGeometry args={[2.48, height, 1.98]} />
-        <meshStandardMaterial
-          color={colors[Math.round(random(0, colors.length - 1))]}
-        />
-      </mesh>
-    </group>
-  );
-}
-
-function Buildings({ ...props }) {
-  return (
-    <group {...props}>
-      {[...Array(4)]
-        .map((k, i) => [i * 2.5 - 3.75, 3.5])
-        .map(([x, z], key) => (
-          <Building key={key} position={[x, 0, z]} />
-        ))}
-    </group>
-  );
-}
-
-// https://www.youtube.com/watch?v=F75DVNJyzuw
-// https://owenbmcc.github.io/mmp310/project3-2/
-// https://github.com/owenbmcc/mmp310/blob/master/project3-2/scene.js
-function Trunk({ height: h, ...props }) {
-  const [ref] = useCylinder(() => ({ position: [0, h / 2, 0], ...props }));
-
-  return (
-    <mesh ref={ref} receiveShadow>
-      <cylinderGeometry args={[0.1, 0.2, h, 5]} />
-      <meshStandardMaterial
-        color={colors[Math.round(random(0, colors.length - 1))]}
-      />
-    </mesh>
-  );
-}
-
-function Leave({ color, height: h, ...props }) {
-  const x = random(-0.5, 0.5);
-  const y = h + random(-0.5, 0.25);
-  const z = random(-0.5, 0.5);
-  const [ref] = useSphere(() => ({
-    position: [x, y, z],
-    rotation: [random(0, Math.PI * 0.5), random(0, Math.PI * 0.5), 0],
-    ...props,
-  }));
-
-  return (
-    <mesh ref={ref} receiveShadow>
-      <icosahedronGeometry args={[random(h / 12, h / 4)]} />
-      <meshStandardMaterial color={color} />
-    </mesh>
-  );
-}
-
-function Tree({ ...props }) {
-  const height = random(4, 6);
-  const color = colors[Math.round(random(0, colors.length - 1))];
-
-  return (
-    <group {...props}>
-      <Trunk height={height} />
-      {[...Array(5)].map((i, key) => (
-        <Leave key={key} color={color} height={height} />
-      ))}
-    </group>
-  );
-}
-
-function Trees({ ...props }) {
-  return (
-    <group {...props}>
-      {[...Array(5)]
-        .map((k, i) => [i * 2 - random(3.8, 4.2), 0.75])
-        .map(([x, z], key) => (
-          <Tree key={key} position={[x, 0, z]} />
-        ))}
-    </group>
-  );
-}
-
-function Lamp({ ...props }) {
-  const h = 3;
-  return (
-    <group {...props}>
-      <pointLight castShadow intensity={0.3} position={[0, h, 0]} />
-      <mesh position={[0, h, 0]}>
-        <sphereGeometry args={[0.25]} />
-        <meshStandardMaterial
-          {...{
-            color: 0xfcfdd1,
-            metalness: 0.75,
-            roughness: 0,
-            emissive: new THREE.Color(0xfff8cf),
-            emissiveIntensity: 1,
-            transparent: true,
-            opacity: 0.95,
-          }}
-        />
-      </mesh>
-      <mesh position={[0, h / 2, 0]}>
-        <cylinderGeometry args={[0.05, 0.05, h, 5]} />
-        <meshStandardMaterial color={0x404040} />
-      </mesh>
-    </group>
-  );
-}
-
-function Lamps({ ...props }) {
-  return (
-    <group {...props}>
-      {[...Array(4)]
-        .map((k, i) => [i * 2 - 3, 0.75])
-        .map(([x, z], key) => (
-          <Lamp key={key} position={[x, 0, z]} />
-        ))}
     </group>
   );
 }
@@ -476,15 +270,18 @@ export default function Demo() {
           fade
         />
         <ambientLight intensity={0.01} />
-        <Physics gravity={[0, -30, 0]}>
-          <Debug scale={1.1} color="black">
+        <hemisphereLight intensity={0.75} />
+        <spotLight
+          position={[10, 10, 10]}
+          angle={0.3}
+          penumbra={1}
+          intensity={2}
+          castShadow
+        />
+        <Physics>
+          <Debug>
             <Suspense fallback="loading...">
-              <Ground />
-              <Street />
-              <Sidewalk />
-              <Buildings />
-              {/* <Trees /> */}
-              <Lamps />
+              <Model />
               <Person />
             </Suspense>
           </Debug>

@@ -16,6 +16,7 @@ const PAGES = {
   "demo-4": lazy(() => import("./FloatingLaptop")),
   "demo-5": lazy(() => import("./Alley")),
   "demo-6": lazy(() => import("./Water")),
+  "demo-7": lazy(() => import("./Airport")),
   gamepad: lazy(() => import("./Gamepad")),
 };
 
