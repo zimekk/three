@@ -14,7 +14,6 @@
       "commit-msg": "commitlint --edit \"$1\""
     }
   },
-  "lint-staged": {},
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
