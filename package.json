@@ -8,12 +8,6 @@
   "engines": {
     "node": "^12"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged",
-      "commit-msg": "commitlint --edit \"$1\""
-    }
-  },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
@@ -24,21 +18,24 @@
     "build": "yarn workspaces run build",
     "serve": "yarn workspace @dev/app serve",
     "start": "yarn workspace @dev/app start",
-    "update": "yarn upgrade-interactive --latest"
+    "dedupe": "yarn-deduplicate && yarn",
+    "dedupe:list": "yarn-deduplicate --list",
+    "update": "yarn upgrade-interactive",
+    "update:latest": "yarn upgrade-interactive --latest",
+    "prepare": "husky install"
   },
   "workspaces": [
     "packages/*"
   ],
-  "resolutions": {},
   "devDependencies": {
-    "@commitlint/cli": "^12.1.4",
-    "@commitlint/config-conventional": "^12.1.4",
+    "@commitlint/cli": "^15.0.0",
+    "@commitlint/config-conventional": "^15.0.0",
     "fibers": "^5.0.0",
-    "husky": "^4.3.7",
+    "husky": "^7.0.4",
     "lerna": "^4.0.0",
-    "prettier": "^2.3.2",
-    "pretty-quick": "^3.1.1",
-    "type-coverage": "^2.18.0",
+    "prettier": "^2.4.1",
+    "pretty-quick": "^3.1.2",
+    "type-coverage": "^2.19.0",
     "yarn-deduplicate": "^3.1.0"
   }
 }
