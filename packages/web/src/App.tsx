@@ -6,6 +6,7 @@ import styles from "./App.module.scss";
 const Spinner = () => <span>Loading...</span>;
 
 const PAGES = {
+  earth: lazy(() => import("./Earth")),
   "game-1": lazy(() => import("./Game1")),
   "game-2": lazy(() => import("./Minecraft")),
   "game-3": lazy(() => import("./RaycastVehicle")),
