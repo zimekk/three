@@ -39,6 +39,14 @@ function Earth() {
         saturation={0}
         fade={true}
       />
+      <OrbitControls
+        enableZoom={true}
+        enablePan={true}
+        enableRotate={true}
+        zoomSpeed={0.6}
+        panSpeed={0.5}
+        rotateSpeed={0.4}
+      />
       <mesh ref={cloudsRef} position={[0, 0, 3]}>
         <sphereGeometry args={[1.005, 32, 32]} />
         <meshPhongMaterial
@@ -57,14 +65,6 @@ function Earth() {
           normalMap={normalMap}
           metalness={0.4}
           roughness={0.7}
-        />
-        <OrbitControls
-          enableZoom={true}
-          enablePan={true}
-          enableRotate={true}
-          zoomSpeed={0.6}
-          panSpeed={0.5}
-          rotateSpeed={0.4}
         />
       </mesh>
     </>

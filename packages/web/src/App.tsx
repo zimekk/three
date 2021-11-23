@@ -7,6 +7,7 @@ const Spinner = () => <span>Loading...</span>;
 
 const PAGES = {
   earth: lazy(() => import("./Earth")),
+  landscape: lazy(() => import("./Landscape")),
   "game-1": lazy(() => import("./Game1")),
   "game-2": lazy(() => import("./Minecraft")),
   "game-3": lazy(() => import("./RaycastVehicle")),
