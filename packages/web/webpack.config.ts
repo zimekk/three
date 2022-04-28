@@ -14,10 +14,11 @@ const config: webpack.Configuration = {
   devServer: {
     port: 8080,
   },
-  entry: (dev
-    ? ["react-hot-loader/patch", "webpack-hot-middleware/client"]
-    : []
-  ).concat([require.resolve("./src")]),
+  entry: ["regenerator-runtime/runtime"]
+    .concat(
+      dev ? ["react-hot-loader/patch", "webpack-hot-middleware/client"] : []
+    )
+    .concat([require.resolve("./src")]),
   module: {
     rules: [
       {
@@ -48,7 +49,11 @@ const config: webpack.Configuration = {
         loader: "babel-loader",
         exclude: /node_modules/,
         options: {
-          presets: ["@babel/preset-react", "@babel/preset-typescript"],
+          presets: [
+            "@babel/preset-env",
+            "@babel/preset-react",
+            "@babel/preset-typescript",
+          ],
           plugins: ["react-hot-loader/babel"],
         },
       },
