@@ -1,4 +1,4 @@
-FROM node:12-slim AS dep
+FROM node:14-slim AS dep
 WORKDIR /app
 # https://www.docker.com/blog/keep-nodejs-rockin-in-docker/
 ENV NODE_ENV development
